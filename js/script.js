@@ -1,72 +1,59 @@
-// target list items
-const list = document.getElementsByClassName("student-item cf");
-// create a div
-const newDiv = document.createElement("div");
-// -------------------------------------------------------------------------------------------- display the first page
-//A function with a parameter of page and students
-const studentsList = (page, list) => {
-  // A loop that will show ten students
-  for (let i = 0; i < list.length; i += 1) {
-    //if else statement to show or hide students
+// global variables
+const students = document.querySelectorAll(".student-item");
+const numOfPages = Math.ceil(students.length / 10);
+
+// showPage function with a parameter of students and page
+const showPage = (students, page) => {
+  for (let i = 0; i < students.length; i += 1) {
+    // if else statement to show or hide students if index is within page number intervals
     if (i >= page * 10 - 10 && i < page * 10) {
-      list[i].style.display = "block";
+      students[i].style.display = "block";
     } else {
-      list[i].style.display = "none";
+      students[i].style.display = "none";
     }
   }
 };
 
-// -------------------------------------------------------------------------------------- -Call studentList function
+// call showPage function for the first page
+showPage(students, 1);
 
-studentsList(1, list);
-
-// -----------------------------------------------------------------------------------------Function pages
-const pages = () => {
-  // create ul
+const appendPages = list => {
+  // create div element on page and set class
+  const div = document.createElement("div");
+  // assign page class to a variable
+  const page = document.querySelector(".page");
+  page.appendChild(div);
+  div.className = "pagination";
+  // add ul to div
   const ul = document.createElement("ul");
-  // target the page class
-  const pages = document.querySelector(".page");
-  //round up the number of pages
-  const numberOfStudents = Math.ceil(list.length / 10);
-
-  //assign a class to a div
-  newDiv.className = "pagination";
-  //appending children to pages and newDiv
-  pages.appendChild(newDiv);
-  newDiv.appendChild(ul);
-
-  // loop for anchor tags
-  for (let i = 1; i <= numberOfStudents; i++) {
+  div.appendChild(ul);
+  // for every page, add li and a tags with the page number
+  for (let i = 1; i <= numOfPages; i += 1) {
+    // add li tags to the div
     const li = document.createElement("li");
-    const a = document.createElement("a");
     ul.appendChild(li);
+    // add a tags to the li
+    const a = document.createElement("a");
     li.appendChild(a);
-    // page number the same as i
+    a.setAttribute("href", "#");
     a.textContent = i;
-    //link to an empty string
-    a.href = "#";
+    // if (a.textContent === "1")
+    //   // highlight first button
+    //   a.style.backgroundColor = "highlight";
+    // add an event listener that displays correct page when clicked
+    a.addEventListener("click", e => {
+      const aLinks = document.querySelectorAll("a");
+      let page = e.target;
+      page.className = "active";
+      // loop through all a tags and highlights current page
+      for (let i = 0; i < aLinks.length; i += 1) {
+        if (aLinks[i] !== page) {
+          aLinks[i].className = "";
+        }
+      }
+      // call the show page function
+      showPage(students, page.textContent);
+    });
   }
 };
-//-----------------------------------------------------------------------------------------Call pages function
-
-pages();
-
-//-------------------------------------------------------------------------------------------Event listener
-newDiv.addEventListener("click", e => {
-  //Variable for anchor tags and page number
-  let numberOfPages = document.getElementsByTagName("a");
-  //if loop to activate anchor tags whenever clicked
-  if (e.target.tagName === "a") {
-    //assign a class called 'active' to the element
-    e.target.className = "active";
-    numberOfPages = e.target.textContent;
-    //shows the right amount of students and student names by calling studentsList function
-    studentsList(numberOfPages, list);
-  }
-  //--------------------------------------Change active page when moved to another pages
-  const active = document.querySelector(".active");
-  //remove 'active' class from pages
-  for (let i = 0; i < numberOfPages.length; i++) {
-    active.classList.remove("active");
-  }
-});
+appendPages(students);
